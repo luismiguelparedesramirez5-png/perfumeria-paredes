@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paredes Perfumería | Esencias Exclusivas</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts: Cinzel (Serif para lujo) y Montserrat (Sans para lectura) -->
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap");
+
+      :root {
+        --gold: #c5a059;
+        --gold-dark: #a68545;
+        --dark: #1a1a1a;
+        --light: #f9f9f9;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--light);
+        color: var(--dark);
+      }
+
+      .font-luxury {
+        font-family: "Cinzel", serif;
+      }
+
+      /* Animaciones suaves */
+      .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Estilo personalizado de Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--gold);
+        border-radius: 3px;
+      }
+
+      /* Efectos de Hover en tarjetas */
+      .product-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .product-card:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-4px);
+      }
+    </style>
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gold: '#c5a059',
+              'gold-dark': '#a68545',
+              dark: '#1a1a1a',
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="flex flex-col min-h-screen">
+
+    <!-- 1. BARRA SUPERIOR DE INFORMACIÓN -->
+    <div class="bg-dark text-white text-[10px] md:text-xs py-2.5 px-4 tracking-widest uppercase font-medium z-50 relative">
+      <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+        <span class="flex items-center gap-2">
+          <i data-lucide="truck" class="w-3 h-3 text-gold"></i> Envíos nacionales disponibles
+        </span>
+        <div class="flex gap-6 items-center">
+          <a href="tel:8093987187" class="hover:text-gold transition-colors flex items-center gap-2">
+            <i data-lucide="phone" class="w-3 h-3"></i> 809.398.7187
+          </a>
+          <div class="h-3 w-[1px] bg-gray-600 hidden md:block"></div>
+          <a href="https://www.instagram.com/paredesperfumeria" target="_blank" class="hover:text-gold transition-colors flex items-center gap-2">
+            <i data-lucide="instagram" class="w-3 h-3"></i> @paredesperfumeria
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. HEADER PRINCIPAL (STICKY) -->
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 shadow-sm">
+      <div class="container mx-auto px-4 py-4 md:py-6">
+        <div class="flex items-center justify-between">
+          
+          <!-- Botón Menú Móvil -->
+          <button class="md:hidden p-2" onclick="toggleMobileFilters()">
+            <i data-lucide="menu" class="w-6 h-6 text-dark"></i>
+          </button>
+
+          <!-- Logo -->
+          <div class="text-center md:text-left flex-grow md:flex-grow-0" onclick="resetFilters()">
+            <h1 class="font-luxury text-2xl md:text-3xl font-bold tracking-[0.15em] text-dark cursor-pointer">PAREDES</h1>
+            <p class="text-[9px] md:text-[10px] tracking-[0.4em] text-gold uppercase text-center md:text-justify md:pl-1">Perfumería</p>
+          </div>
+
+          <!-- Navegación Escritorio (Géneros) -->
+          <nav class="hidden md:flex gap-8 text-[11px] font-semibold uppercase tracking-[2px]">
+            <button onclick="filterByGender('Todos')" class="nav-btn hover:text-gold transition-colors text-gold" data-gender="Todos">Todos</button>
+            <button onclick="filterByGender('Hombre')" class="nav-btn hover:text-gold transition-colors" data-gender="Hombre">Caballeros</button>
+            <button onclick="filterByGender('Mujer')" class="nav-btn hover:text-gold transition-colors" data-gender="Mujer">Damas</button>
+            <button onclick="filterByGender('Unisex')" class="nav-btn hover:text-gold transition-colors" data-gender="Unisex">Unisex</button>
+          </nav>
+
+          <!-- Iconos Derecha -->
+          <div class="flex items-center gap-4">
+            <div class="relative hidden lg:block group">
+              <input type="text" id="searchInput" placeholder="Buscar..." 
+                class="pl-3 pr-8 py-1.5 text-xs border-b border-gray-300 focus:border-gold outline-none bg-transparent transition-all w-32 focus:w-48 placeholder-gray-400 font-medium tracking-wide">
+              <i data-lucide="search" class="w-4 h-4 absolute right-0 top-2 text-gray-400"></i>
+            </div>
+            
+            <button onclick="toggleCart()" class="relative p-1 hover:text-gold transition-colors">
+              <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+              <span id="cartCount" class="absolute -top-1 -right-1 bg-gold text-white text-[9px] rounded-full w-4 h-4 flex items-center justify-center font-bold shadow-sm animate-pulse">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Barra de búsqueda móvil -->
+        <div class="md:hidden mt-4 relative">
+          <input type="text" id="searchInputMobile" placeholder="Buscar perfume..." 
+            class="w-full pl-4 pr-10 py-2 text-xs bg-gray-50 border border-gray-200 rounded-sm focus:border-gold outline-none">
+          <i data-lucide="search" class="w-4 h-4 absolute right-3 top-2.5 text-gray-400"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- 3. LAYOUT PRINCIPAL -->
+    <div class="container mx-auto px-4 py-8 flex-grow flex gap-8">
+      
+      <!-- SIDEBAR (Las "Carpetas" de Marcas) - Escritorio -->
+      <aside class="hidden md:block w-64 flex-shrink-0 sticky top-32 h-[calc(100vh-10rem)] overflow-y-auto pr-2 custom-scrollbar">
+        <h3 class="font-luxury text-sm font-bold border-b border-gray-200 pb-2 mb-4 tracking-widest uppercase">Colecciones</h3>
+        
+        <!-- Filtro Rápido Sidebar -->
+        <div class="mb-6 flex flex-col gap-2">
+          <button onclick="resetFilters()" class="text-xs text-left py-1.5 px-3 rounded hover:bg-gray-100 transition-colors font-semibold text-gold border-l-2 border-gold bg-gray-50" id="btn-all-brands">
+            Ver Todo
+          </button>
+        </div>
+
+        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Por Marca</h4>
+        <div id="brandsList" class="flex flex-col gap-1 text-xs text-gray-600">
+          <!-- Se llena con JS -->
+        </div>
+      </aside>
+
+      <!-- ÁREA DE PRODUCTOS -->
+      <main class="flex-grow">
+        <!-- Título de la Sección Actual -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h2 id="sectionTitle" class="font-luxury text-2xl md:text-3xl text-dark tracking-widest uppercase">Catálogo</h2>
+            <p id="sectionSubtitle" class="text-xs text-gray-400 tracking-[0.2em] mt-1 uppercase">Selección Exclusiva</p>
+          </div>
+          <div class="h-[1px] bg-gray-200 flex-grow ml-8 hidden sm:block"></div>
+        </div>
+
+        <!-- Grid de Productos -->
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-10">
+          <!-- Se llena con JS -->
+        </div>
+      </main>
+    </div>
+
+    <!-- SIDEBAR MÓVIL (Off-canvas) -->
+    <div id="mobileFilterSidebar" class="fixed inset-y-0 left-0 w-[280px] bg-white z-50 transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+      <div class="p-5 bg-dark text-white flex justify-between items-center">
+        <span class="font-luxury tracking-widest">FILTROS</span>
+        <button onclick="toggleMobileFilters()"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="p-5 flex-grow overflow-y-auto">
+        <div class="mb-6">
+          <h4 class="font-bold text-xs uppercase tracking-widest mb-3 border-b pb-1">Género</h4>
+          <div class="flex flex-col gap-3 pl-2">
+            <button onclick="filterByGender('Todos'); toggleMobileFilters()" class="text-xs text-left font-medium">Todos</button>
+            <button onclick="filterByGender('Hombre'); toggleMobileFilters()" class="text-xs text-left text-gray-600">Caballeros</button>
+            <button onclick="filterByGender('Mujer'); toggleMobileFilters()" class="text-xs text-left text-gray-600">Damas</button>
+            <button onclick="filterByGender('Unisex'); toggleMobileFilters()" class="text-xs text-left text-gray-600">Unisex</button>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-bold text-xs uppercase tracking-widest mb-3 border-b pb-1">Marcas</h4>
+          <div id="mobileBrandsList" class="flex flex-col gap-2 pl-2 text-xs text-gray-600">
+            <!-- JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="mobileOverlay" onclick="toggleMobileFilters()" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white pt-16 pb-8 border-t-4 border-gold">
+      <div class="container mx-auto px-4 text-center">
+        <h3 class="font-luxury text-2xl tracking-[0.3em] mb-2">PAREDES</h3>
+        <p class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-8">La esencia del lujo en cada gota</p>
+        
+        <div class="flex justify-center gap-8 mb-10">
+          <a href="https://www.instagram.com/paredesperfumeria" target="_blank" class="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gold hover:border-gold hover:text-white transition-all duration-300 text-gray-400">
+            <i data-lucide="instagram" class="w-5 h-5"></i>
+          </a>
+          <a href="tel:8093987187" class="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gold hover:border-gold hover:text-white transition-all duration-300 text-gray-400">
+            <i data-lucide="phone" class="w-5 h-5"></i>
+          </a>
+          <a href="https://wa.me/8093987187" class="w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center hover:bg-gold hover:border-gold hover:text-white transition-all duration-300 text-gray-400">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
+          </a>
+        </div>
+
+        <div class="text-[9px] text-gray-600 tracking-widest uppercase border-t border-gray-800 pt-8">
+          &copy; 2025 Paredes Perfumería. Todos los derechos reservados.
+        </div>
+      </div>
+    </footer>
+
+    <!-- CARRITO LATERAL (Slide-over) -->
+    <div id="cartSidebar" class="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-white z-[60] transform translate-x-full transition-transform duration-500 shadow-2xl flex flex-col font-sans">
+      <div class="p-6 bg-dark text-white flex justify-between items-center shadow-md">
+        <div>
+          <h3 class="font-luxury text-lg tracking-widest">TU BOLSA</h3>
+          <p class="text-[10px] text-gray-400 uppercase tracking-wide mt-1">Revisa tu selección</p>
+        </div>
+        <button onclick="toggleCart()" class="hover:text-gold transition-colors">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+      
+      <div id="cartItems" class="flex-grow overflow-y-auto p-6 space-y-6 bg-gray-50">
+        <!-- Items del carrito -->
+      </div>
+      
+      <div class="p-6 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="flex justify-between items-end mb-6">
+          <span class="text-xs font-bold text-gray-400 tracking-widest uppercase">Total Estimado</span>
+          <span id="cartTotal" class="font-luxury text-2xl font-bold text-dark">RD$ 0</span>
+        </div>
+        <button onclick="checkout()" class="w-full bg-green-600 text-white py-4 text-xs font-bold tracking-[3px] uppercase hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 rounded-sm">
+          <i data-lucide="message-circle" class="w-4 h-4"></i> Ordenar por WhatsApp
+        </button>
+      </div>
+    </div>
+    <div id="cartOverlay" onclick="toggleCart()" class="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50 hidden opacity-0 transition-opacity duration-500"></div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+      // === CONFIGURACIÓN ===
+      // Imagen placeholder elegante si falla la carga
+      const fallbackImage = "https://images.unsplash.com/photo-1595425970339-274aff3d77d4?q=80&w=500&auto=format&fit=crop";
+
+      // Base de datos de productos (Misma data, estructura limpia)
+      const products = [
+        { brand: "Bond No. 9", name: "LAFAYETTE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 17500, oldPrice: 17500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764974733_6933608d99a82.webp" },
+        { brand: "Bond No. 9", name: "BLECKER", size: "100ml", gender: "UNISEX", status: "Disponible", price: 16000, oldPrice: 16000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765114904_69358418ee80b.webp" },
+        { brand: "Bond No. 9", name: "TRIBECA", size: "100ml", gender: "UNISEX", status: "Disponible", price: 16500, oldPrice: 16500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764974831_693360ef58733.webp" },
+        { brand: "Bond No. 9", name: "THE SCENT OF PEACE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 16500, oldPrice: 16500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764974831_693360ef7a7c7.jpg" },
+        { brand: "Bond No. 9", name: "NOLITA", size: "100ml", gender: "MUJER", status: "Disponible", price: 17500, oldPrice: 17500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764974831_693360efbd0eb.webp" },
+        { brand: "Bond No. 9", name: "MADISON AVENEU EDP", size: "100ml", gender: "UNISEX", status: "Disponible", price: 15000, oldPrice: 15000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764974831_693360efbbf00.webp" },
+        { brand: "Armaf", name: "CLUB DE NUIT INTENSE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418591_693a265f40cd5.png" },
+        { brand: "Armaf", name: "CLUB DE NUIT FOR WOMEN", size: "100ml", gender: "MUJER", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68654d2e81c57_1751469358.webp" },
+        { brand: "Armaf", name: "CLUB DE NUIT ICONIC", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3600, oldPrice: 3600, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68654d571747f_1751469399.jpeg" },
+        { brand: "Armaf", name: "CLUB DE NUIT IMPERIALE", size: "100ml", gender: "MUJER", status: "Disponible", price: 3400, oldPrice: 3400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764971535_6933540f5729a.webp" },
+        { brand: "Armaf", name: "CLUB DE NUIT MALEKA", size: "100ml", gender: "MUJER", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765114592_693582e097b40.webp" },
+        { brand: "Armaf", name: "CLUB DE NUIT MILESTONE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3600, oldPrice: 3600, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1760937626_68f5c69a7b535.webp" },
+        { brand: "Armaf", name: "CLUB DE NUIT SILLAGE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3450, oldPrice: 3450, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68a74b47478ad_1755794247.jpeg" },
+        { brand: "Armaf", name: "CLUB DE NUIT UNTOLD", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3900, oldPrice: 3900, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68a74bb386fff_1755794355.jpeg" },
+        { brand: "Armaf", name: "URBAN ELIXIR", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3790, oldPrice: 3790, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764971710_693354be74069.webp" },
+        { brand: "Bharara", name: "KING EDP", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5000, oldPrice: 5000, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68654eb7b5fa9_1751469751.webp" },
+        { brand: "Bharara", name: "ONYX", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5550, oldPrice: 5550, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764973768_69335cc86ac89.webp" },
+        { brand: "Bharara", name: "QUEEN", size: "100ml", gender: "MUJER", status: "Disponible", price: 5000, oldPrice: 5000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765114764_6935838c5fadb.png" },
+        { brand: "Bharara", name: "SET BHARARA ROSE", size: "100ml", gender: "MUJER", status: "Disponible", price: 6050, oldPrice: 6050, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764973789_69335cdd20108.webp" },
+        { brand: "CHANEL", name: "BLEU", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 10500, oldPrice: 10500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765340476_6938f53cb7475.webp" },
+        { brand: "CREED", name: "AVENTUS IRISH TWEED", size: "100ml", gender: "UNISEX", status: "Disponible", price: 17500, oldPrice: 17500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770477510_698757c615eae.png" },
+        { brand: "CREED", name: "MILESIME IMPERIAL", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 17500, oldPrice: 17500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765404377_6939eed94301c.jpg" },
+        { brand: "Jo Milano", name: "GAME OF SPADE - ACE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5400, oldPrice: 5400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765409976_693a04b80c6e7.png" },
+        { brand: "Jo Milano", name: "GAME OF SPADE - BONUS", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5850, oldPrice: 5850, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1759130000_68da3190ca728.webp" },
+        { brand: "Jo Milano", name: "GAME OF SPADE - NO LIMIT", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5850, oldPrice: 5850, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1759130121_68da320995e7c.webp" },
+        { brand: "Jo Milano", name: "ROUGE EXTRAIT", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5750, oldPrice: 5750, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1759129937_68da31515095d.webp" },
+        { brand: "Jo Milano", name: "BLIND BID", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5850, oldPrice: 5850, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765410097_693a0531ee065.png" },
+        { brand: "Jo Milano", name: "BOSTON", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5850, oldPrice: 5850, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765409998_693a04ce7abee.png" },
+        { brand: "Jo Milano", name: "DIAMOND", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5850, oldPrice: 5850, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765410015_693a04df4fbd0.png" },
+        { brand: "Jo Milano", name: "DOUBLE BONUS", size: "100ml", gender: "UNISEX", status: "Disponible", price: 6200, oldPrice: 6200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1763763142_6920e3c6ea63a.webp" },
+        { brand: "Jo Milano", name: "EMERALD", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5800, oldPrice: 5800, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1763762770_6920e252959a9.webp" },
+        { brand: "Jo Milano", name: "ROYALE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5500, oldPrice: 5500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1763762661_6920e1e5a9213.webp" },
+        { brand: "Jo Milano", name: "WILDCARD", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5500, oldPrice: 5500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1763762696_6920e20853304.webp" },
+        { brand: "Lattafa", name: "HER CONFESSION", size: "100ml", gender: "MUJER", status: "Disponible", price: 3900, oldPrice: 3900, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412731_693a0f7bc9a69.png" },
+        { brand: "Lattafa", name: "HIS CONFESSION", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 4000, oldPrice: 4000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412752_693a0f90abb38.png" },
+        { brand: "Lattafa", name: "KHAMRAH", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3300, oldPrice: 3300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412805_693a0fc545ee0.png" },
+        { brand: "Lattafa", name: "KHAMRAH DUKHAN", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3300, oldPrice: 3300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412828_693a0fdc409e4.png" },
+        { brand: "Lattafa", name: "YARA MOI", size: "100ml", gender: "MUJER", status: "Disponible", price: 3100, oldPrice: 3100, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418115_693a2483f1249.png" },
+        { brand: "Loris Azzaro", name: "THE MOST WANTED", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5900, oldPrice: 5900, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68662c67b2ac3_1751526503.jpeg" },
+        { brand: "Bond No. 9", name: "GREENWICH VILLAGE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 16900, oldPrice: 16900, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_687f9c4aba817_1753193546.jpg" },
+        { brand: "Bond No. 9", name: "GOLD COAST", size: "100ml", gender: "MUJER", status: "Disponible", price: 14000, oldPrice: 14000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765115865_693587d96a98f.webp" },
+        { brand: "Carolina Herrera", name: "BAD BOY LE PARFUM", size: "200ml", gender: "HOMBRE", status: "Disponible", price: 9000, oldPrice: 9000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770916033_698e08c1d429b.jpg" },
+        { brand: "Paco Rabanne", name: "ONE MILLION ELIXIR", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 7200, oldPrice: 7200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770992211_698f3253afa2b.jpg" },
+        { brand: "Ariana Grande", name: "CLOUD EDP", size: "100ml", gender: "MUJER", status: "Disponible", price: 5500, oldPrice: 5500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970912_693351a0dbc62.webp" },
+        { brand: "Armaf", name: "ODYSSEY AQUA", size: "60ml", gender: "HOMBRE", status: "Disponible", price: 2900, oldPrice: 2900, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4XhhHRsRTKJ13emBu5foYE60PykZwUAAXYA&s" },
+        { brand: "Armaf", name: "ODYSSEY CANDEE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3500, oldPrice: 3500, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68654e21bc929_1751469601.webp" },
+        { brand: "Armaf", name: "ODYSSEY MANDARIN SKY", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3000, oldPrice: 3000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764972489_693357c9d802c.jpg" },
+        { brand: "Al Haramain", name: "AMBER OUD GOLD", size: "60ml", gender: "UNISEX", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68751c9011c32_1752505488.jpeg" },
+        { brand: "Al Haramain", name: "AMBER OUD ROUGE", size: "60ml", gender: "UNISEX", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764969590_69334c7620107.webp" },
+        { brand: "Al Haramain", name: "AMBER OUD TOBACO", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764969265_69334b31d4c37.jpg" },
+        { brand: "Al Haramain", name: "AQUA DUBAI EXTRAIT", size: "75ml", gender: "UNISEX", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764969792_69334d40e92ee.jpg" },
+        { brand: "Al Haramain", name: "DUBAI NIGHT", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764971694_693354ae78f52.jpg" },
+        { brand: "Armaf", name: "ODYSSEY MARSMALLOW", size: "100ml", gender: "MUJER", status: "Disponible", price: 4000, oldPrice: 4000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1759129130_68da2e2a0db76.webp" },
+        { brand: "Dolce & Gabbana", name: "DEVOTION", size: "100ml", gender: "MUJER", status: "Disponible", price: 7000, oldPrice: 7000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765407738_6939fbfacfefe.png" },
+        { brand: "Dumont", name: "NITRO RED", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3300, oldPrice: 3300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765408027_6939fd1bc3f1a.png" },
+        { brand: "Jo Milano", name: "GAME SPADE ALL IN", size: "100ml", gender: "UNISEX", status: "Disponible", price: 6300, oldPrice: 6300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770562502_6988a3c680af3.png" },
+        { brand: "Lattafa", name: "BADE'E AL OUD AMETHYST", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3000, oldPrice: 3000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412500_693a0e9415e52.png" },
+        { brand: "Lattafa", name: "FAKHAR FOR WOMEN", size: "100ml", gender: "MUJER", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412571_693a0edb712d9.png" },
+        { brand: "Lattafa", name: "VINTAGE RADIO", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3400, oldPrice: 3400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418093_693a246d73e48.png" },
+        { brand: "Moschino", name: "TOY BOY SET", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 6500, oldPrice: 6500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765417001_693a20299827d.png" },
+        { brand: "Moschino", name: "TOY 2 BUBBLE GUM", size: "100ml", gender: "MUJER", status: "Disponible", price: 5750, oldPrice: 5750, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765417081_693a207950a1b.png" },
+        { brand: "Valentino", name: "DONNA BORN IN ROMA", size: "100ml", gender: "MUJER", status: "Disponible", price: 11500, oldPrice: 11500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765410276_693a05e492bae.png" },
+        { brand: "Afnan", name: "TURATHI ELECTRIC", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4000, oldPrice: 4000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764967664_693344f01f8cc.webp" },
+        { brand: "Afnan", name: "9 AM CORAL", size: "100ml", gender: "MUJER", status: "Disponible", price: 3400, oldPrice: 3400, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68662adf7526a_1751526111.jpeg" },
+        { brand: "Afnan", name: "9 AM DIVE EDP", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3000, oldPrice: 3000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765114520_693582987190d.webp" },
+        { brand: "Afnan", name: "9 PM EDP", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764967544_6933447885438.webp" },
+        { brand: "Afnan", name: "9 PM ELIXIR", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3700, oldPrice: 3700, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1759129307_68da2edb6d497.jpg" },
+        { brand: "Afnan", name: "9 PM REBEL", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3700, oldPrice: 3700, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764967735_693345378dd01.webp" },
+        { brand: "Almas Perfumes", name: "QUMRA", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3300, oldPrice: 3300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970281_69334f297d7ac.webp" },
+        { brand: "Ariana Grande", name: "CLOUD PINK", size: "100ml", gender: "MUJER", status: "Disponible", price: 5500, oldPrice: 5500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970918_693351a624dd7.webp" },
+        { brand: "Armaf", name: "ISLAND BREEZE", size: "100ml", gender: "MUJER", status: "Disponible", price: 4700, oldPrice: 4700, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1760937203_68f5c4f3bd145.webp" },
+        { brand: "Armaf", name: "ODYSSEY BLACK FOREST", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4200, oldPrice: 4200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1760932918_68f5b43696ede.webp" },
+        { brand: "Armaf", name: "ODYSSEY GO MANGO", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4000, oldPrice: 4000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418620_693a267c7fa0f.png" },
+        { brand: "Armaf", name: "ODYSSEY TOFFEE COFFEE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3800, oldPrice: 3800, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1760932893_68f5b41dd12c2.webp" },
+        { brand: "Burberry", name: "LONDON FOR WOMEN", size: "100ml", gender: "MUJER", status: "Disponible", price: 5300, oldPrice: 5300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641093_6989d6c5e78ef.png" },
+        { brand: "Ariana Grande", name: "ARI", size: "100ml", gender: "MUJER", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970509_6933500d573be.webp" },
+        { brand: "Calvin Klein", name: "CK MINI SET", size: "30ml", gender: "HOMBRE", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1763055924_691619347fca0.webp" },
+        { brand: "Calvin Klein", name: "ETERNITY WOMEN", size: "100ml", gender: "MUJER", status: "Disponible", price: 6200, oldPrice: 6200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764975554_693363c26b72a.webp" },
+        { brand: "Carolina Herrera", name: "BAD BOY COBALT ELIXIR", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 7500, oldPrice: 7500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765339912_6938f30809ac7.jpg" },
+        { brand: "Dolce & Gabbana", name: "INTENSO EDP", size: "75ml", gender: "HOMBRE", status: "Disponible", price: 5700, oldPrice: 5700, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770487354_69877e3a9c0c8.png" },
+        { brand: "Dolce & Gabbana", name: "L'IMPERATRICE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5200, oldPrice: 5200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641280_6989d780aee16.jpg" },
+        { brand: "Emper", name: "GENIUS HAYATI", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3000, oldPrice: 3000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765408306_6939fe32c3822.png" },
+        { brand: "Emper", name: "LORD OF FLAME", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3000, oldPrice: 3000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765408331_6939fe4b817b7.png" },
+        { brand: "Emporio Armani", name: "STRONGER WITH YOU INTENSE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 7000, oldPrice: 7000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1756953878_68b8fd16bddfd.jpg" },
+        { brand: "French Avenue", name: "VULCAN FEU", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5500, oldPrice: 5500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765408914_693a009292bb3.png" },
+        { brand: "French Avenue", name: "VULCAN SABLE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5200, oldPrice: 5200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765409206_693a01b6ef282.png" },
+        { brand: "GUCCI", name: "GUILTY EDT", size: "90ml", gender: "UNISEX", status: "Disponible", price: 7900, oldPrice: 7900, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641368_6989d7d8173fc.jpg" },
+        { brand: "Jean Paul Gaultier", name: "DIVINE EDT", size: "50ml", gender: "MUJER", status: "Disponible", price: 6500, oldPrice: 6500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770562066_6988a212d6759.png" },
+        { brand: "Jean Paul Gaultier", name: "LA BELLE PARADISE", size: "30ml", gender: "UNISEX", status: "Disponible", price: 6300, oldPrice: 6300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641517_6989d86d4a54e.jpg" },
+        { brand: "Jimmy Choo", name: "I WANT CHOO SET", size: "100ml", gender: "MUJER", status: "Disponible", price: 7200, oldPrice: 7200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770919215_698e152fef800.jpg" },
+        { brand: "Jimmy Choo", name: "ROSE PASION", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4900, oldPrice: 4900, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641556_6989d8946c119.jpg" },
+        { brand: "Jo Milano", name: "EXCLUSIVE SET", size: "100ml", gender: "UNISEX", status: "Disponible", price: 9500, oldPrice: 9500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764292974_6928f96e68a2a.webp" },
+        { brand: "King of Kings", name: "ANARCHY NO RULES", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68a747b9a51a9_1755793337.jpeg" },
+        { brand: "King of Kings", name: "ROYAL CROWN", size: "100ml", gender: "UNISEX", status: "Disponible", price: 4300, oldPrice: 4300, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_68a7487746702_1755793527.jpeg" },
+        { brand: "Lattafa", name: "ASAD ELIXIR", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3900, oldPrice: 3900, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412297_693a0dc93d770.png" },
+        { brand: "Lattafa", name: "ECLAIRE PISTACHE", size: "100ml", gender: "MUJER", status: "Disponible", price: 3990, oldPrice: 3990, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1759129155_68da2e4371894.webp" },
+        { brand: "Lattafa", name: "EMAAN", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412544_693a0ec0e8147.png" },
+        { brand: "Lattafa", name: "PETRA EDP", size: "100ml", gender: "MUJER", status: "Disponible", price: 4100, oldPrice: 4100, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_686552234c2f9_1751470627.webp" },
+        { brand: "Lattafa", name: "YARA EDP", size: "100ml", gender: "MUJER", status: "Disponible", price: 3000, oldPrice: 3000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418047_693a243f9b3cd.png" },
+        { brand: "Maison Margiela", name: "REPLICA - ON A DATE", size: "100ml", gender: "UNISEX", status: "Disponible", price: 7200, oldPrice: 7200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1760933396_68f5b614db321.jpg" },
+        { brand: "Marc Jacobs", name: "PERFECT", size: "100ml", gender: "MUJER", status: "Disponible", price: 6500, oldPrice: 6500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765416801_693a1f612b8a5.png" },
+        { brand: "MONTBLANC", name: "EXPLORER SET", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 6200, oldPrice: 6200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1771260075_699348ab46d6f.jpg" },
+        { brand: "MONTBLANC", name: "LEGEND EDT SET", size: "50ml", gender: "HOMBRE", status: "Disponible", price: 5200, oldPrice: 5200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641660_6989d8fc27f6f.jpg" },
+        { brand: "MUGLER", name: "ANGEL EDT", size: "100ml", gender: "MUJER", status: "Disponible", price: 7200, oldPrice: 7200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770567295_6988b67fe52d1.jpg" },
+        { brand: "Orientica", name: "ROYAL BLUE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5700, oldPrice: 5700, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418223_693a24ef3f9a2.png" },
+        { brand: "Prada", name: "L'HOMME INTENSE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 7500, oldPrice: 7500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770641762_6989d962edb4b.jpg" },
+        { brand: "Rasasi", name: "HAWAS ATLANTIS", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765807321_694014d97ec33.jpg" },
+        { brand: "Rasasi", name: "HAWAS ECLAT", size: "100ml", gender: "MUJER", status: "Disponible", price: 4400, oldPrice: 4400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765410906_693a085a19145.png" },
+        { brand: "Rasasi", name: "HAWAS FOR MEN", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 4000, oldPrice: 4000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765410883_693a08432e0f4.png" },
+        { brand: "Rasasi", name: "HAWAS PINK", size: "100ml", gender: "MUJER", status: "Disponible", price: 4500, oldPrice: 4500, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1766069992_694416e818261.webp" },
+        { brand: "Sol de Janeiro", name: "40", size: "200ml", gender: "MUJER", status: "Disponible", price: 2800, oldPrice: 2800, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_686fafb3d82b9_1752149939.webp" },
+        { brand: "Valentino", name: "GREEN STRAVAGANZA", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 7200, oldPrice: 7200, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418345_693a256900a6c.png" },
+        { brand: "Valentino", name: "CORAL FANTASY", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 8900, oldPrice: 8900, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765417491_693a2213e1814.png" },
+        { brand: "Versace", name: "EAU FRAICHE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 5200, oldPrice: 5200, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_6881ba741f125_1753332340.jpeg" },
+        { brand: "Versace", name: "EROS ENERGY", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 6400, oldPrice: 6400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418533_693a262509519.png" },
+        { brand: "YSL", name: "KOUROS EDT", size: "100ml", gender: "UNISEX", status: "Disponible", price: 7000, oldPrice: 7000, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1770642061_6989da8daa046.jpg" },
+        { brand: "YSL", name: "MYSELF LE PARFUM", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 10000, oldPrice: 10000, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_686553eeba615_1751471086.webp" },
+        { brand: "Emper", name: "STALLION 53", size: "100ml", gender: "UNISEX", status: "Disponible", price: 2800, oldPrice: 2800, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765408625_6939ff71b987c.png" },
+        { brand: "Le Bonheur", name: "CARAMEL LATTE", size: "100ml", gender: "MUJER", status: "Disponible", price: 3400, oldPrice: 3400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970115_69334e83e066b.webp" },
+        { brand: "Le Bonheur", name: "MARIGOLD", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3400, oldPrice: 3400, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970093_69334e6d9b95d.webp" },
+        { brand: "Le Bonheur", name: "SERENITY", size: "100ml", gender: "UNISEX", status: "Disponible", price: 3800, oldPrice: 3800, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1764970081_69334e61ee0f2.webp" },
+        { brand: "CLAIBORN", name: "CURVE", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3600, oldPrice: 3600, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765404127_6939eddfeb958.jpg" },
+        { brand: "Lattafa", name: "BRIOCHE VANILLE", size: "100ml", gender: "MUJER", status: "Disponible", price: 3300, oldPrice: 3300, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1760937551_68f5c64f01f62.webp" },
+        { brand: "Lattafa", name: "ECLAIRE", size: "100ml", gender: "MUJER", status: "Disponible", price: 3800, oldPrice: 3800, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765412531_693a0eb3cdea9.png" },
+        { brand: "Lattafa", name: "OUD FOR GLORY", size: "100ml", gender: "HOMBRE", status: "Disponible", price: 3200, oldPrice: 3200, image: "https://nuevalux.com/inventario/uploads/perfumes/perfume_686551eb67a0a_1751470571.jpeg" },
+        { brand: "Orientica", name: "ROYAL AMBER", size: "100ml", gender: "UNISEX", status: "Disponible", price: 5700, oldPrice: 5700, image: "https://nuevalux.com/inventario/uploads/perfumes/product_1765418206_693a24debeb3c.png" }
+      ];
+
+      let cart = [];
+      let currentFilterType = 'All'; // 'All', 'Gender', 'Brand'
+      let currentFilterValue = 'Todos';
+
+      // === INICIALIZACIÓN ===
+      function init() {
+        renderBrands(products);
+        renderProducts(products);
+        lucide.createIcons();
+      }
+
+      // === RENDERIZADO DE MARCAS (SISTEMA DE CARPETAS) ===
+      function renderBrands(items) {
+        // Extraer marcas únicas y ordenarlas
+        const brands = [...new Set(items.map(p => p.brand))].sort();
+        
+        const listContainer = document.getElementById("brandsList");
+        const mobileListContainer = document.getElementById("mobileBrandsList");
+        
+        const html = brands.map(brand => `
+          <button onclick="filterByBrand('${brand}'); if(window.innerWidth < 768) toggleMobileFilters()" 
+            class="brand-btn w-full text-left py-1.5 px-3 rounded hover:bg-gray-100 transition-colors capitalize flex items-center justify-between group" data-brand="${brand}">
+            <span>${brand.toLowerCase()}</span>
+            <span class="opacity-0 group-hover:opacity-100 text-gold transition-opacity text-[10px]">▶</span>
+          </button>
+        `).join("");
+
+        listContainer.innerHTML = html;
+        mobileListContainer.innerHTML = html;
+      }
+
+      // === RENDERIZADO DE PRODUCTOS ===
+      function renderProducts(items) {
+        const grid = document.getElementById("productGrid");
+        
+        if (items.length === 0) {
+          grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-400 font-luxury tracking-widest uppercase">No se encontraron perfumes.</div>`;
+          return;
+        }
+
+        grid.innerHTML = items.map((product, index) => {
+          const isAgotado = product.status === "Agotado";
+          // Encontrar índice original para el carrito
+          const originalIndex = products.indexOf(product);
+          
+          return `
+            <div class="product-card group bg-white relative flex flex-col h-full fade-in">
+              <div class="relative w-full aspect-[4/5] bg-gray-50 overflow-hidden mb-3">
+                <img src="${product.image}" 
+                  alt="${product.name}" 
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onerror="this.src='${fallbackImage}'">
+                
+                ${isAgotado 
+                  ? '<div class="absolute inset-0 bg-white/70 flex items-center justify-center font-luxury text-xs tracking-widest text-gray-400 border border-gray-200 m-4">AGOTADO</div>' 
+                  : `<div class="absolute bottom-0 left-0 w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <button onclick="addToCart(${originalIndex})" class="w-full bg-dark text-white py-3 text-[10px] tracking-widest uppercase hover:bg-gold transition-colors shadow-lg">
+                        Añadir a Bolsa
+                      </button>
+                     </div>`
+                }
+              </div>
+
+              <div class="flex flex-col flex-grow text-center px-2 pb-4">
+                <span class="text-[9px] font-bold text-gray-400 tracking-widest uppercase mb-1">${product.brand}</span>
+                <h3 class="font-luxury text-sm font-semibold text-dark leading-tight mb-2 min-h-[2.5rem] flex items-center justify-center">${product.name}</h3>
+                <div class="mt-auto pt-2 border-t border-gray-100 w-full max-w-[80px] mx-auto">
+                  <p class="text-xs font-bold text-gold tracking-wider">RD$ ${product.price.toLocaleString()}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+        
+        lucide.createIcons();
+      }
+
+      // === LOGICA DE FILTROS ===
+
+      function updateUIFilters(type, value) {
+        // Actualizar UI Botones Navegación (Género)
+        document.querySelectorAll(".nav-btn").forEach(btn => {
+          btn.classList.remove("text-gold");
+          if(type === 'Gender' && btn.dataset.gender === value) {
+            btn.classList.add("text-gold");
+          }
+        });
+
+        // Actualizar UI Sidebar (Marcas)
+        document.querySelectorAll(".brand-btn").forEach(btn => {
+          btn.classList.remove("bg-gray-100", "font-bold", "text-dark");
+          if(type === 'Brand' && btn.dataset.brand === value) {
+            btn.classList.add("bg-gray-100", "font-bold", "text-dark");
+          }
+        });
+
+        // Actualizar botón "Ver Todo"
+        const btnAll = document.getElementById("btn-all-brands");
+        if(type === 'All' || type === 'Gender') {
+           btnAll.classList.add("text-gold", "border-l-2", "border-gold", "bg-gray-50");
+        } else {
+           btnAll.classList.remove("text-gold", "border-l-2", "border-gold", "bg-gray-50");
+        }
+
+        // Títulos
+        const title = document.getElementById("sectionTitle");
+        const subtitle = document.getElementById("sectionSubtitle");
+
+        if (type === 'All') {
+          title.innerText = "Catálogo";
+          subtitle.innerText = "Selección Exclusiva";
+        } else if (type === 'Gender') {
+          title.innerText = value === 'Todos' ? "Catálogo Completo" : `Colección ${value}`;
+          subtitle.innerText = "Filtrado por categoría";
+        } else if (type === 'Brand') {
+          title.innerText = value;
+          subtitle.innerText = "Marca Exclusiva";
+        }
+      }
+
+      function filterByGender(gender) {
+        currentFilterType = 'Gender';
+        currentFilterValue = gender;
+        
+        let filtered = products;
+        if (gender !== "Todos") {
+          filtered = products.filter(p => {
+             // Normalizar texto para evitar errores de mayúsculas
+             const g = p.gender.toUpperCase();
+             const target = gender.toUpperCase();
+             return g === target || (target === 'UNISEX' && g === 'UNISEX');
+          });
+        }
+        
+        updateUIFilters('Gender', gender);
+        renderProducts(filtered);
+      }
+
+      function filterByBrand(brand) {
+        currentFilterType = 'Brand';
+        currentFilterValue = brand;
+
+        const filtered = products.filter(p => p.brand === brand);
+        updateUIFilters('Brand', brand);
+        renderProducts(filtered);
+      }
+
+      function resetFilters() {
+        filterByGender('Todos');
+        updateUIFilters('All', null);
+      }
+
+      // === BÚSQUEDA ===
+      function handleSearch(query) {
+        query = query.toLowerCase();
+        const filtered = products.filter(p => 
+          p.name.toLowerCase().includes(query) || 
+          p.brand.toLowerCase().includes(query)
+        );
+        
+        document.getElementById("sectionTitle").innerText = "Resultados";
+        document.getElementById("sectionSubtitle").innerText = `"${query}"`;
+        renderProducts(filtered);
+      }
+
+      document.getElementById("searchInput").addEventListener("input", (e) => handleSearch(e.target.value));
+      document.getElementById("searchInputMobile").addEventListener("input", (e) => handleSearch(e.target.value));
+
+
+      // === CARRITO ===
+      function toggleCart() {
+        const sidebar = document.getElementById("cartSidebar");
+        const overlay = document.getElementById("cartOverlay");
+        sidebar.classList.toggle("translate-x-full");
+        overlay.classList.toggle("hidden");
+        setTimeout(() => overlay.classList.toggle("opacity-100"), 10);
+      }
+
+      function toggleMobileFilters() {
+        const sidebar = document.getElementById("mobileFilterSidebar");
+        const overlay = document.getElementById("mobileOverlay");
+        const isOpen = !sidebar.classList.contains("-translate-x-full");
+        
+        if(isOpen) {
+           sidebar.classList.add("-translate-x-full");
+           overlay.classList.add("hidden");
+        } else {
+           sidebar.classList.remove("-translate-x-full");
+           overlay.classList.remove("hidden");
+        }
+      }
+
+      function addToCart(index) {
+        cart.push(products[index]);
+        updateCart();
+        // Feedback visual simple
+        const btn = document.getElementById("cartCount");
+        btn.classList.add("scale-125");
+        setTimeout(() => btn.classList.remove("scale-125"), 200);
+        
+        if (cart.length === 1) toggleCart();
+      }
+
+      function updateCart() {
+        const items = document.getElementById("cartItems");
+        document.getElementById("cartCount").innerText = cart.length;
+
+        if (cart.length === 0) {
+          items.innerHTML = '<div class="text-center py-10"><i data-lucide="shopping-bag" class="w-10 h-10 text-gray-200 mx-auto mb-3"></i><p class="text-xs text-gray-400 uppercase tracking-widest">Tu bolsa está vacía</p></div>';
+          document.getElementById("cartTotal").innerText = "RD$ 0";
+          lucide.createIcons();
+          return;
+        }
+
+        let sum = 0;
+        items.innerHTML = cart.map((p, idx) => {
+          sum += p.price;
+          return `
+            <div class="flex gap-4 items-start border-b border-gray-200 pb-4 last:border-0 fade-in">
+              <div class="w-16 h-20 flex-shrink-0 bg-white border border-gray-200 overflow-hidden">
+                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" onerror="this.src='${fallbackImage}'">
+              </div>
+              <div class="flex-grow">
+                <div class="flex justify-between items-start">
+                   <div>
+                     <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">${p.brand}</p>
+                     <h4 class="font-luxury text-xs font-bold text-dark mb-1">${p.name}</h4>
+                   </div>
+                   <button onclick="removeFromCart(${idx})" class="text-gray-300 hover:text-red-400 transition-colors">
+                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                   </button>
+                </div>
+                <p class="text-[10px] text-gray-500 mb-2">${p.size}</p>
+                <p class="text-xs font-bold text-gold">RD$ ${p.price.toLocaleString()}</p>
+              </div>
+            </div>
+          `;
+        }).join("");
+        
+        document.getElementById("cartTotal").innerText = `RD$ ${sum.toLocaleString()}`;
+        lucide.createIcons();
+      }
+
+      function removeFromCart(idx) {
+        cart.splice(idx, 1);
+        updateCart();
+      }
+
+      function checkout() {
+        if (cart.length === 0) return;
+        
+        const date = new Date().toLocaleDateString('es-DO');
+        let msg = `*NUEVO PEDIDO - PAREDES PERFUMERÍA* ✨\nFecha: ${date}\n\n*Detalles del pedido:*\n`;
+        
+        cart.forEach((p, index) => {
+          msg += `\n${index + 1}. *${p.brand}* - ${p.name}\n   Precio: RD$ ${p.price.toLocaleString()}\n`;
+        });
+        
+        const total = cart.reduce((a, b) => a + b.price, 0).toLocaleString();
+        msg += `\n--------------------------------\n*TOTAL A PAGAR: RD$ ${total}*\n--------------------------------\n\nHola, me gustaría confirmar la disponibilidad de estos perfumes y coordinar el envío. Gracias.`;
+        
+        window.open(`https://wa.me/8093987187?text=${encodeURIComponent(msg)}`, "_blank");
+      }
+
+      // Iniciar app
+      window.onload = init;
+    </script>
+  </body>
+</html>
